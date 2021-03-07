@@ -1,4 +1,5 @@
 from pathlib import Path
+from pprint import pprint
 from urllib.parse import quote_plus
 
 import feedparser
@@ -7,6 +8,8 @@ import requests
 
 jp50 = [c for c in "あいうえおかきくけこさしすせそたちつてとなにぬねのはひふへほまみむめもやゆよらりるれろわをん"]
 headers = {"User-Agent": "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:86.0) Gecko/20100101 Firefox/86.0"}
+
+pprint(requests.get("https://invidious.snopyta.org/api/v1/stats", headers=headers).json())
 
 youtube_video = requests.get("https://invidious.snopyta.org/api/v1/search?q=" + quote_plus(" OR ".join(jp50)) + "&date=today", headers=headers).json()
 youtube_video_df = pd.DataFrame(
