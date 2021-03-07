@@ -13,8 +13,6 @@ youtube_video_df = pd.DataFrame(
     map(
         lambda video: {
             "url": "https://www.youtube.com/watch?v=" + video["videoId"],
-            "title": video["title"],
-            "description": video["description"],
             "live": video["liveNow"] or video["premium"],
             "upcoming": video["isUpcoming"],
         },
@@ -28,8 +26,6 @@ youtube_live_df = pd.DataFrame(
     map(
         lambda live: {
             "url": "https://www.youtube.com/watch?v=" + live["videoId"],
-            "title": live["title"],
-            "description": live["description"],
             "live": live["liveNow"] or live["premium"],
             "upcoming": live["isUpcoming"],
         },
@@ -43,8 +39,6 @@ twitter_df = pd.DataFrame(
     map(
         lambda status: {
             "url": status.link.replace("#m", "").replace("nitter.pussthecat.org", "twitter.com"),
-            "title": status.author,
-            "description": status.title,
         },
         twitter,
     )
