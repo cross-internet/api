@@ -34,7 +34,7 @@ class InvidiousAPI:
 
 
 class TwitterAPI:
-    def __init__(self, consumer_key="3nVuSoBZnx6U4vzUxf5w", consumer_secret="Bcs59EFbbsdF6Sl9Ng71smgStWEGwXXKSjYvPVt7qys"):
+    def __init__(self, consumer_key="iAtYJ4HpUVfIUoNnif1DA", consumer_secret="172fOpzuZoYzNYaU3mMYvE8m8MEyLbztOdbrUolU"):
         auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
         self.api = tweepy.API(auth)
 
