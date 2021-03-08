@@ -1,6 +1,5 @@
 from datetime import datetime
 from pathlib import Path
-from pprint import pprint
 
 import pandas as pd
 
@@ -13,9 +12,6 @@ twitter = utils.TwitterAPI()
 # Path
 path = Path("public/article.csv")
 json_path = Path("public/article.json")
-
-# 後述する処理で空のデータが帰ってくる確率を下げる
-pprint(invidious.stats())
 
 # 動画を取得する
 invidious_videos = invidious.today_videos()
