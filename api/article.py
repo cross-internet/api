@@ -19,12 +19,33 @@ pprint(invidious.stats())
 
 # 動画を取得する
 invidious_videos = invidious.today_videos()
-youtube_videos_df = pd.DataFrame(map(lambda video: {"url": "https://www.youtube.com/watch?v=" + video["videoId"], "date": datetime.fromtimestamp(video["published"]).astimezone().isoformat(), "traffic": video["viewCount"]}, filter(lambda video: not (video["liveNow"] or video["premium"] or video["isUpcoming"]), invidious_videos)))
+youtube_videos_df = pd.DataFrame(
+    map(
+        lambda video: {
+            "url": "https://www.youtube.com/watch?v=" + video["videoId"],
+            "date": datetime.fromtimestamp(video["published"]).astimezone().isoformat(),
+            "traffic": video["viewCount"],
+        },
+        filter(
+            lambda video: not (video["liveNow"] or video["premium"] or video["isUpcoming"]),
+            invidious_videos,
+        ),
+    )
+)
 print(youtube_videos_df)
 
 # ツイートを取得する
 tweets = twitter.today_tweets()
-tweets_df = pd.DataFrame(map(lambda tweet: {"url": "https://twitter.com/" + tweet["user"]["screen_name"] + "/status/" + tweet["id_str"], "date": datetime.strptime(tweet["created_at"], "%a %b %d %H:%M:%S %z %Y").isoformat(), "traffic": tweet["favorite_count"]}, tweets))
+tweets_df = pd.DataFrame(
+    map(
+        lambda tweet: {
+            "url": "https://twitter.com/" + tweet["user"]["screen_name"] + "/status/" + tweet["id_str"],
+            "date": datetime.strptime(tweet["created_at"], "%a %b %d %H:%M:%S %z %Y").isoformat(),
+            "traffic": tweet["favorite_count"],
+        },
+        tweets,
+    )
+)
 print(tweets_df)
 
 # 読み込み
