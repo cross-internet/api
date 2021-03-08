@@ -39,4 +39,4 @@ class TwitterAPI:
         self.api = tweepy.API(auth)
 
     def today_tweets(self):
-        return [status._json for status in self.api.search("min_faves:10000", lang="ja", result_type="mixed", count=40, since=YESTERDAY.date().isoformat())]
+        return [status._json for status in self.api.search("min_faves:10000", lang="ja", since=YESTERDAY.date().isoformat())]
