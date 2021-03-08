@@ -12,10 +12,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      - uses: actions/checkout@v2
+        with:
+          ref: api
+          path: ./api/public
       - uses: actions/setup-python@v2
       - run: pip install -r requirements.txt
         working-directory: ./api
-      - run: python fetch.py
+      - run: python article.py
         working-directory: ./api
       - uses: peaceiris/actions-gh-pages@v3
         with:
