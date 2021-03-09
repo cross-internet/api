@@ -1,6 +1,9 @@
-name: Article
+name: API
 
 on:
+  push:
+    branches:
+      - main
   schedule:
     - cron: "*/30 * * * *"
 
@@ -9,17 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: actions/checkout@v2
-        with:
-          ref: api
-          path: ./api/public
       - uses: actions/setup-python@v2
       - run: pip install -r requirements.txt
-        working-directory: ./api
       - run: python article.py
-        working-directory: ./api
-      - uses: peaceiris/actions-gh-pages@v3
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./api/public
-          publish_branch: api
+      - uses: stefanzweifel/git-auto-commit-action@v4
