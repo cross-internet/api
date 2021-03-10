@@ -62,11 +62,11 @@ print(invidious_videos)
 
 # load
 df = read_csv_and_concat("public/invidious_videos.csv", invidious_videos)
-# 24h
-df = df[pd.to_datetime(df.published_at) > YESTERDAY]
 # dedup & sort
 df = df.drop_duplicates(subset=["id"])
 df = df.sort_values(by=["views"], ascending=False)
+# 1d
+df = df[pd.to_datetime(df.published_at) > YESTERDAY]
 # save
 df.to_csv("public/invidious_videos.csv", index=False)
 
