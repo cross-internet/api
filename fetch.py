@@ -19,14 +19,35 @@ def read_csv_and_concat(file, df):
 
 def fetch_invidious_domains():
     json = requests.get("https://api.invidious.io/instances.json").json()
-    df = pd.DataFrame(map(lambda instance: [instance[0], instance[1]["type"], instance[1]["stats"] and instance[1]["stats"].get("software")], json), columns=["name", "type", "software"])
+    df = pd.DataFrame(
+        map(
+            lambda instance: [
+                instance[0],
+                instance[1]["type"],
+                instance[1]["stats"] and instance[1]["stats"].get("software"),
+            ],
+            json,
+        ),
+        columns=["name", "type", "software"],
+    )
     df = df[(df.type == "https") & (df.software.notnull())]
     return df
 
 
 def fetch_invidious_videos(search_list, domain, **kwargs):
     json = requests.get("https://" + domain + "/api/v1/search?q=" + quote_plus(" | ".join(search_list)) + "&date=today&sort_by=view_count", **kwargs).json()
-    df = pd.DataFrame(map(lambda video: [video["videoId"], video["viewCount"], datetime.fromtimestamp(video["published"]).astimezone().isoformat(), video["isUpcoming"] or video["liveNow"] or video["premium"]], json), columns=["id", "views", "published_at", "live_feature"])
+    df = pd.DataFrame(
+        map(
+            lambda video: [
+                video["videoId"],
+                video["viewCount"],
+                datetime.fromtimestamp(video["published"]).astimezone().isoformat(),
+                video["isUpcoming"] or video["liveNow"] or video["premium"],
+            ],
+            json,
+        ),
+        columns=["id", "views", "published_at", "live_feature"],
+    )
     df = df[df.live_feature == False]
     return df
 
@@ -42,3 +63,18 @@ df = df.drop_duplicates(subset=["id"]).sort_values(by=["views"], ascending=False
 df = df[pd.to_datetime(df.published_at) > YESTERDAY]
 # TODO: deleted check, update views
 df.to_csv("public/invidious_videos.csv", index=False)
+
+invidious_videos_df = pd.DataFrame(
+    map(
+        lambda row: [
+            f"https://www.youtube.com/watch?v={row.id}",
+            "https://" + random.choice(invidious_domains.name.values) + f"/watch?v={row.id}",
+            row.published_at,
+            row.views,
+        ],
+        [row for _, row in df.iterrows()],
+    ),
+    columns=["url", "alternative_url", "date", "traffic"],
+)
+
+invidious_videos_df.to_json("public/v2.json", orient="records")
