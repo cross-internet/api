@@ -19,37 +19,14 @@ def read_csv_and_concat(file, df):
 
 def fetch_invidious_domains():
     json = requests.get("https://api.invidious.io/instances.json").json()
-
-    df = pd.DataFrame(
-        map(
-            lambda instance: {
-                "name": instance[0],
-                "type": instance[1]["type"],
-                "software": instance[1]["stats"] and instance[1]["stats"].get("software"),
-            },
-            json,
-        ),
-        columns=["name", "type", "software"],
-    )
+    df = pd.DataFrame(map(lambda instance: {"name": instance[0], "type": instance[1]["type"], "software": instance[1]["stats"] and instance[1]["stats"].get("software")}, json), columns=["name", "type", "software"])
     df = df[(df.type == "https") & (df.software.notnull())]
     return df
 
 
-def fetch_invidious_videos(search_list, domain):
-    json = requests.get("https://" + domain + "/api/v1/search?q=" + quote_plus(" | ".join(search_list)) + "&date=today&sort_by=view_count", headers=HEADERS).json()
-
-    df = pd.DataFrame(
-        map(
-            lambda video: {
-                "id": video["videoId"],
-                "views": video["viewCount"],
-                "published_at": datetime.fromtimestamp(video["published"]).astimezone().isoformat(),
-                "live_feature": video["isUpcoming"] or video["liveNow"] or video["premium"],
-            },
-            json,
-        ),
-        columns=["id", "views", "published_at", "live_feature"],
-    )
+def fetch_invidious_videos(search_list, domain, **kwargs):
+    json = requests.get("https://" + domain + "/api/v1/search?q=" + quote_plus(" | ".join(search_list)) + "&date=today&sort_by=view_count", **kwargs).json()
+    df = pd.DataFrame(map(lambda video: {"id": video["videoId"], "views": video["viewCount"], "published_at": datetime.fromtimestamp(video["published"]).astimezone().isoformat(), "live_feature": video["isUpcoming"] or video["liveNow"] or video["premium"]}, json), columns=["id", "views", "published_at", "live_feature"])
     df = df[df.live_feature == False]
     return df
 
@@ -57,7 +34,7 @@ def fetch_invidious_videos(search_list, domain):
 invidious_domains = fetch_invidious_domains()
 print(invidious_domains)
 
-invidious_videos = fetch_invidious_videos(random.choices(HIRA_KATA, k=int(len(HIRA_KATA) / 4)), "invidious.snopyta.org")
+invidious_videos = fetch_invidious_videos(random.choices(HIRA_KATA, k=int(len(HIRA_KATA) / 4)), "invidious.snopyta.org", headers=HEADERS)
 print(invidious_videos)
 
 # load
