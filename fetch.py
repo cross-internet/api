@@ -37,17 +37,8 @@ print(invidious_domains)
 invidious_videos = fetch_invidious_videos(random.choices(HIRA_KATA, k=int(len(HIRA_KATA) / 4)), "invidious.snopyta.org", headers=HEADERS)
 print(invidious_videos)
 
-# load
 df = read_csv_and_concat("public/invidious_videos.csv", invidious_videos)
-# dedup & sort
-df = df.drop_duplicates(subset=["id"])
-df = df.sort_values(by=["views"], ascending=False)
-# 1d
+df = df.drop_duplicates(subset=["id"]).sort_values(by=["views"], ascending=False)
 df = df[pd.to_datetime(df.published_at) > YESTERDAY]
-# save
+# TODO: deleted check, update views
 df.to_csv("public/invidious_videos.csv", index=False)
-
-# deleted check, update views
-
-for _, video in invidious_videos.iterrows():
-    print(f"https://www.youtube.com/watch?v={video.id} ({video.views} views)")
