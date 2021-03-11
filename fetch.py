@@ -24,13 +24,13 @@ def fetch_invidious_domains():
             lambda instance: [
                 instance[0],
                 instance[1]["type"],
-                instance[1]["stats"] and instance[1]["stats"].get("software"),
+                instance[1]["stats"] and instance[1]["stats"].get("error"),
             ],
             json,
         ),
-        columns=["name", "type", "software"],
+        columns=["name", "type", "error"],
     )
-    df = df[(df.type == "https") & (df.software.notnull())]
+    df = df[(df.type == "https") & (df.error.isnull())]
     return df
 
 
@@ -52,18 +52,23 @@ def fetch_invidious_videos(search_list, domain, **kwargs):
     return df
 
 
+# invidious domains
 invidious_domains = fetch_invidious_domains()
 print(invidious_domains)
 
+# invidious videos
 invidious_videos = fetch_invidious_videos(random.choices(HIRA_KATA, k=int(len(HIRA_KATA) / 4)), "invidious.snopyta.org", headers=HEADERS)
 print(invidious_videos)
 
+# invidious videos (update)
 df = read_csv_and_concat("public/invidious_videos.csv", invidious_videos)
-df = df.drop_duplicates(subset=["id"]).sort_values(by=["views"], ascending=False)
+df = df.drop_duplicates(subset=["id"])
 df = df[pd.to_datetime(df.published_at) > YESTERDAY]
-# TODO: deleted check, update views
+df = df.sort_values(by=["views"], ascending=False)
+df = df.reset_index(drop=True)
 df.to_csv("public/invidious_videos.csv", index=False)
 
+# save as json
 invidious_videos_df = pd.DataFrame(
     map(
         lambda row: [
